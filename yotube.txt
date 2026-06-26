@@ -1,5 +1,3 @@
-#profile-title: ДЛЯ YOUTUBE INSTAGRAM TIKTOK 🎬
-#announce: Полный Vpn-http://bit.ly/netrknvpn
 {
 "dns": {
     "hosts": {
