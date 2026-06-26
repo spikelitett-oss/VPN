@@ -1,4 +1,1431 @@
-"dialerProxy": "LOOP-L1-BRIDGE"
+{
+"dns": {
+    "hosts": {
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4"
+      ],
+      "domain:sosa.ink": [
+        "5.252.32.187"
+      ],
+      "one.one.one.one": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "cloudflare-dns.com": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "common.dot.dns.yandex.net": [
+        "77.88.8.8",
+        "77.88.8.1"
+      ]
+    },
+    "servers": [
+      {
+        "tag": "cloudflare-dns",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "timeoutMs": 1000
+      },
+      {
+        "tag": "google-dns",
+        "address": "https://dns.google/dns-query",
+        "timeoutMs": 1000
+      },
+      {
+        "tag": "yandex-dns",
+        "address": "https://common.dot.dns.yandex.net/dns-query",
+        "domains": [
+          "geosite:category-ru"
+        ],
+        "timeoutMs": 1000
+      },
+      {
+        "tag": "localhost-dns",
+        "address": "localhost",
+        "domains": [
+          "geosite:private"
+        ]
+      }
+    ],
+    "queryStrategy": "UseIPv4"
+  },
+  "log": {
+    "loglevel": "warning"
+  },
+  "stats": {},
+  "policy": {
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
+  "routing": {
+    "rules": [
+      {
+        "port": "443",
+        "network": "udp",
+        "outboundTag": "block"
+      },
+      {
+        "protocol": [
+          "bittorrent"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "ruleTag": "dns-to-direct",
+        "inboundTag": [
+          "yandex-dns"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "inboundTag": [
+          "L2-RUSSIA-REROUTE"
+        ],
+        "balancerTag": "l2-russia-balancer"
+      },
+      {
+        "inboundTag": [
+          "L2-MAIN-REROUTE"
+        ],
+        "balancerTag": "l2-main-balancer"
+      },
+      {
+        "inboundTag": [
+          "L1-BRIDGE-REROUTE"
+        ],
+        "balancerTag": "l1-bridge-balancer"
+      },
+      {
+        "inboundTag": [
+          "L2-BRIDGE-REROUTE"
+        ],
+        "balancerTag": "l2-bridge-balancer"
+      },
+      {
+        "inboundTag": [
+          "L3-BRIDGE-REROUTE"
+        ],
+        "balancerTag": "l3-bridge-balancer"
+      },
+      {
+        "ruleTag": "dns-to-proxy",
+        "inboundTag": [
+          "google-dns",
+          "cloudflare-dns"
+        ],
+        "balancerTag": "l1-main-balancer"
+      },
+      {
+        "port": "53",
+        "network": "tcp,udp",
+        "outboundTag": "dns-out"
+      },
+      {
+        "domain": [
+          "geosite:speedtest",
+          "domain:speedtest.net",
+          "domain:ookla.com",
+          "domain:ooklaserver.net",
+          "domain:speedtestcustom.com",
+          "domain:cdnst.net",
+          "domain:pingtest.net",
+          "domain:webtest.net",
+          "domain:speedtest.co",
+          "domain:cellmaps.com",
+          "domain:ekahau.com",
+          "domain:ekahau.cloud",
+          "domain:openspeedtest.com",
+          "domain:openspeedtest.ru",
+          "domain:open.cachefly.net",
+          "domain:fast.com",
+          "domain:fastspeedtest.com",
+          "domain:speed.cloudflare.com",
+          "domain:nperf.com",
+          "domain:speedof.me",
+          "domain:testmy.net",
+          "domain:testmyspeed.com",
+          "domain:speedcheck.org",
+          "domain:meter.net",
+          "domain:linkmeter.net",
+          "domain:measurementlab.net",
+          "domain:speedgeo.net",
+          "domain:speedtest.org",
+          "domain:speedtest.xyz",
+          "domain:speedtest.im",
+          "domain:speedtest.de",
+          "domain:speedtest.ch",
+          "domain:speedtest.co.za",
+          "domain:speedtest.uz",
+          "domain:speedtest.xfinity.com",
+          "domain:speedtest.frontier.com",
+          "domain:speedtest.shaw.ca",
+          "domain:speed.hinet.net",
+          "domain:speed2.hinet.net",
+          "domain:speedtest.ru",
+          "domain:speedtest.su",
+          "domain:speedtest.rt.ru",
+          "domain:speedtest.mail.ru",
+          "domain:speedtest.dno-it.ru",
+          "domain:speedtest24.ru",
+          "domain:testskorosti.ru",
+          "domain:speedtest.net.ua",
+          "domain:speedtest.volia.com",
+          "domain:speedtest.citylink.pro"
+        ],
+        "outboundTag": "block"
+      },
+      {
+        "domain": [
+          "geosite:youtube",
+          "full:www.google.com",
+          "2ip.io"
+        ],
+        "balancerTag": "l1-russia-balancer"
+      },
+      {
+        "domain": [
+          "habr.com",
+          "4pda",
+          "kemono.su",
+          "jut.su",
+          "kara.su",
+          "theins.ru",
+          "tvrain.ru",
+          "echo.msk.ru",
+          "the-village.ru",
+          "snob.ru",
+          "novayagazeta.ru",
+          "moscowtimes.ru",
+          "animesss.tv",
+          "geosite:tiktok"
+        ],
+        "balancerTag": "l1-main-balancer"
+      },
+      {
+        "domain": [
+          "geosite:category-ru",
+          "domain:sosa.ink"
+        ],
+        "balancerTag": "direct-balancer"
+      },
+      {
+        "ip": [
+          "geoip:ru"
+        ],
+        "balancerTag": "direct-balancer"
+      },
+      {
+        "network": "tcp,udp",
+        "balancerTag": "l1-main-balancer"
+      }
+    ],
+    "balancers": [
+      {
+        "tag": "direct-balancer",
+        "selector": [
+          "direct"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 1
+          }
+        },
+        "fallbackTag": "LOOP-L1-BRIDGE"
+      },
+      {
+        "tag": "l1-russia-balancer",
+        "selector": [
+          "russiahysteria"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "maxRTT": "2s",
+            "expected": 1
+          }
+        },
+        "fallbackTag": "LOOP-L2-RUSSIA"
+      },
+      {
+        "tag": "l2-russia-balancer",
+        "selector": [
+          "russiahysteria"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 1
+          }
+        },
+        "fallbackTag": "bridgerussiavless1"
+      },
+      {
+        "tag": "l1-main-balancer",
+        "selector": [
+          "polandhysteria",
+          "germanyhysteria",
+          "norwayhysteria",
+          "swedenhysteria",
+          "latviahysteria"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "maxRTT": "2s",
+            "expected": 1
+          }
+        },
+        "fallbackTag": "LOOP-L2-MAIN"
+      },
+      {
+        "tag": "l2-main-balancer",
+        "selector": [
+          "polandhysteria",
+          "germanyhysteria",
+          "norwayhysteria",
+          "swedenhysteria",
+          "latviahysteria"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 1
+          }
+        },
+        "fallbackTag": "bridgegermanyvless1"
+      },
+      {
+        "tag": "l1-bridge-balancer",
+        "selector": [
+          "l1bridgehysteria"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 1
+          }
+        },
+        "fallbackTag": "LOOP-L2-BRIDGE"
+      },
+      {
+        "tag": "l2-bridge-balancer",
+        "selector": [
+          "l2bridgehysteria"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 1
+          }
+        },
+        "fallbackTag": "LOOP-L3-BRIDGE"
+      },
+      {
+        "tag": "l3-bridge-balancer",
+        "selector": [
+          "l3bridgehysteria"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 1
+          }
+        },
+        "fallbackTag": "direct"
+      }
+    ],
+    "domainStrategy": "IPIfNonMatch"
+  },
+  "inbounds": [
+    {
+      "tag": "socks",
+      "port": 10808,
+      "protocol": "socks",
+      "settings": {
+        "udp": true,
+        "auth": "noauth",
+        "userLevel": 8
+      },
+      "sniffing": {
+        "enabled": true,
+        "routeOnly": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "ForceIPv4"
+      }
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "dns-out",
+      "protocol": "dns",
+      "settings": {
+        "blockTypes": [
+          28
+        ],
+        "nonIPQuery": "skip"
+      }
+    },
+    {
+      "tag": "LOOP-L2-RUSSIA",
+      "protocol": "loopback",
+      "settings": {
+        "inboundTag": "L2-RUSSIA-REROUTE"
+      }
+    },
+    {
+      "tag": "LOOP-L2-MAIN",
+      "protocol": "loopback",
+      "settings": {
+        "inboundTag": "L2-MAIN-REROUTE"
+      }
+    },
+    {
+      "tag": "LOOP-L1-BRIDGE",
+      "protocol": "loopback",
+      "settings": {
+        "inboundTag": "L1-BRIDGE-REROUTE"
+      }
+    },
+    {
+      "tag": "LOOP-L2-BRIDGE",
+      "protocol": "loopback",
+      "settings": {
+        "inboundTag": "L2-BRIDGE-REROUTE"
+      }
+    },
+    {
+      "tag": "LOOP-L3-BRIDGE",
+      "protocol": "loopback",
+      "settings": {
+        "inboundTag": "L3-BRIDGE-REROUTE"
+      }
+    },
+    {
+      "tag": "latviahysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "185.81.128.86",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "latviahysteria2",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "185.81.128.98",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "latviahysteria3",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "185.81.128.148",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "latviahysteria4",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "185.81.129.169",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "swedenhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "94.185.83.5",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "polandhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "144.31.1.75",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "polandhysteria2",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "91.224.75.185",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "polandhysteria3",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "87.76.138.1",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "norwayhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "87.76.138.2",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "germanyhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "203.23.179.232",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "kazakhstanhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "38.107.234.187",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "japanhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "142.91.109.84",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "usahysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "162.210.197.238",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "usahysteria2",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "152.53.53.168",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "turkeyhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "87.76.138.3",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "russiahysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "213.171.9.195",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "russiahysteria2",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "94.228.118.70",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "russiahysteria3",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "194.87.56.99",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "russiahysteria4",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "185.247.185.238",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "russiahysteria5",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "62.76.233.254",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "russiahysteria6",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "94.228.112.55",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        }
+      }
+    },
+    {
+      "tag": "bridgelatviahysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "185.81.129.169",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgeswedenhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "94.185.83.5",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgenorwayhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "87.76.138.2",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgepolandhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "144.31.1.75",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgegermanyhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "203.23.179.232",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgekazakhstanhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "38.107.234.187",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgejapanhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "142.91.109.84",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgeturkeyhysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "87.76.138.3",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgerussiahysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "62.76.233.254",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
+        }
+      }
+    },
+    {
+      "tag": "bridgeusahysteria1",
+      "protocol": "hysteria",
+      "settings": {
+        "address": "162.210.197.238",
+        "port": 25443,
+        "version": 2
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "9f57befb-85df-4c38-b921-438a6be3f9a3"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cloudrynth.com",
+          "fingerprint": "firefox",
+          "alpn": [
+            "h3"
+          ]
+        },
+        "finalmask": {
+          "quicParams": {
+            "bbrProfile": "standard",
+            "congestion": "bbr",
+            "maxIdleTimeout": 4
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "LOOP-L1-BRIDGE"
         }
       }
     },
@@ -149,5 +1576,5 @@
       "l3bridgehysteria"
     ]
   },
-  "remarks": "🇪🇺 YouTube | Без рекламы ⚡"
+  "remarks": "🇪🇺 YouTube | TikTok | Instagram | Лучший сервер ⚡"
 }
